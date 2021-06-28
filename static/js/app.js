@@ -1,5 +1,6 @@
 //Plotly HW - Diana Kennen
 
+//Downloading json and assigning each part to a variable
 d3.json("../../data/samples.json").then(function(data){
     var ids = data.names;
     var metadata = data.metadata;
@@ -13,12 +14,14 @@ d3.json("../../data/samples.json").then(function(data){
         .append('option')
         .text(function(d) {return d;});
 
+    //Function to filter arrays by ID   
     function filterbyId(data) {
         var selId = d3.select('#selDataset').node().value;
         console.log(selId)
         return data.id == selId;       
     };
 
+    //Creating top 10 arrays
     var filteredSamples = samples.filter(filterbyId);
     console.log(filteredSamples);
     var sel_otu_ids = filteredSamples.map(otus => otus.otu_ids);
@@ -31,6 +34,8 @@ d3.json("../../data/samples.json").then(function(data){
     var sel_otu_labels = filteredSamples.map(otus => otus.otu_labels);
     var sel_otu_labels_10 = sel_otu_labels[0].slice(0,10);
     console.log(sel_otu_labels_10);
+
+    //Filtering demographic info by Id
     var demo_info = metadata.filter(filterbyId);
     console.log(demo_info);
  
@@ -58,7 +63,7 @@ d3.json("../../data/samples.json").then(function(data){
 
     initbar();
 
-    //Initial Bubble Chart
+    //Initializing Bubble Chart
     function initbubble() {
         console.log(sel_otu_ids);
         console.log(sel_sample_values);
@@ -91,23 +96,24 @@ d3.json("../../data/samples.json").then(function(data){
 
     //Initializing Demographic Information
     function demotable(data) {
-        var demoT = d3.select("tbody")
-            .selectAll("tr")
-            .data(data)
-            .enter().append("tr");
-  
-       var td = demoT.selectAll("td")
-            .data(function(d, i) { return Object.values(d); })
-            .enter().append("td")
-            .text(function(d) { return d; });           
+        console.log(data[0])
+        d3.select("#sample-metadata")
+            .insert("p").text(`Id:  ${data[0].id}`)
+            .insert("p").text(`Ethnicity: ${data[0].ethnicity}`)
+            .insert("p").text(`Gender: ${data[0].gender}`)
+            .insert("p").text(`Age: ${data[0].age}`)
+            .insert("p").text(`Location: ${data[0].location}`)
+            .insert("p").text(`BBType: ${data[0].bbtype}`)
+            .insert("p").text(`WFreq: ${data[0].wfreq}`);
     };
-               
+   
     demotable(demo_info);
 
-    //Updating Graphs Upon New Selection
+    //Updating Graphs and Demographic Information Upon New Selection
     d3.selectAll("#selDataset").on("change", updatePlotly);
 
     function updatePlotly() {
+        //Updating arrays based upon new Id
         var filteredSamples = samples.filter(filterbyId);
         console.log(filteredSamples)
         var sel_otu_ids = filteredSamples.map(otus => otus.otu_ids);
@@ -117,6 +123,7 @@ d3.json("../../data/samples.json").then(function(data){
         var sel_sample_values_10 = sel_sample_values[0].slice(0,10);   
         var sel_otu_labels = filteredSamples.map(otus => otus.otu_labels);
         var sel_otu_labels_10 = sel_otu_labels[0].slice(0,10);
+        var demo_info = metadata.filter(filterbyId);
     
         //Updating Bar Chart
         var x = [];
@@ -149,6 +156,11 @@ d3.json("../../data/samples.json").then(function(data){
         Plotly.restyle("bubble", "y", [y2]);
         Plotly.restyle("bubble", "text", [text2]);
         Plotly.restyle("bubble", "marker", [marker2])
+
+        //Updating Demographic Information
+        d3.select("#sample-metadata")
+            .html("");
+        demotable(demo_info);
     }
 
     initbar();
