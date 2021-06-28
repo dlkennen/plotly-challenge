@@ -1,7 +1,7 @@
 //Plotly HW - Diana Kennen
 
 //Downloading json and assigning each part to a variable
-d3.json("../samples.json").then(function(data){
+d3.json("samples.json").then(function(data){
     var ids = data.names;
     var metadata = data.metadata;
     var samples = data.samples;
