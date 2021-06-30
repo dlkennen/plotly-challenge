@@ -165,4 +165,7 @@ d3.json("samples.json").then(function(data){
 
     initbar();
     initbubble();
+    
+}).catch(function(error) {
+    console.log(error);   
 });
